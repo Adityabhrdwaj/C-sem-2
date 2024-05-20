@@ -1,0 +1,100 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node* next;
+} *head = NULL;
+
+// Function to create a new node
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->next = newNode;
+    return newNode;
+}
+
+// Function to insert at the end of the list
+void insertEnd(int data) {
+    struct Node* newNode = createNode(data);
+    if (head == NULL) {
+        head = newNode;
+    } else {
+        struct Node* temp = head;
+        while (temp->next != head) temp = temp->next;
+        temp->next = newNode;
+        newNode->next = head;
+    }
+}
+
+// Function to delete a node by key
+void deleteNode(int key) {
+    if (head == NULL) return;
+    struct Node *temp = head, *prev = NULL;
+    do {
+        if (temp->data == key) {
+            if (temp == head) {
+                if (head->next == head) {
+                    free(head);
+                    head = NULL;
+                } else {
+                    prev = head;
+                    while (prev->next != head) prev = prev->next;
+                    prev->next = head->next;
+                    free(head);
+                    head = prev->next;
+                }
+            } else {
+                prev->next = temp->next;
+                free(temp);
+            }
+            return;
+        }
+        prev = temp;
+        temp = temp->next;
+    } while (temp != head || prev == NULL);
+}
+
+// Function to search a node with given data
+struct Node* search(int key) {
+    struct Node* current = head;
+    if (head == NULL) return NULL;
+    do {
+        if (current->data == key) return current;
+        current = current->next;
+    } while (current != head);
+    return NULL;
+}
+
+// Function to display the list
+void display() {
+    if (head == NULL) return;
+    struct Node* temp = head;
+    do {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    } while (temp != head);
+    printf("\n");
+}
+
+int main() {
+    // Insertions
+    insertEnd(1);
+    insertEnd(2);
+    insertEnd(3);
+    display(); // Output: 1 2 3
+
+    // Deletion
+    deleteNode(2);
+    display(); // Output: 1 3
+
+    // Search
+    struct Node* found = search(3);
+    if (found != NULL) {
+        printf("Node found with data: %d\n", found->data); // Output: Node found with data: 3
+    } else {
+        printf("Node not found.\n");
+    }
+
+    return 0;
+}
